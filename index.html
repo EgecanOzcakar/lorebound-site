@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Lorebound Games is an independent studio making SorcMerc and Horde.">
 <title>Lorebound Games</title>
+<link rel="icon" href="img/lorebound-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;500;700&display=swap">
 <style>
-/* Layout: a clothbound book. Title page, then each game as a numbered volume (its pitch, what sets it apart, a plate gallery), then the colophon. */
+/* Layout: the studio card first (the splash the games open on), then each game as a volume: its title art, then one row per thing
+   that sets it apart, each with the screenshot that shows it, then a strip of more shots, then the colophon. */
 :root{
   --cloth:#14171f;      /* bookcloth, ink-dark */
-  --board:#1c202b;      /* a raised panel */
+  --night:#141a26;      /* the studio card's ground, its painting's sky */
   --paper:#ece3cf;      /* page text */
+  --ink:#f1e8d8;        /* the studio card's mark and words */
   --dim:#a99f8b;        /* faded ink */
   --gilt:#d4a94e;       /* gold tooling */
   --oxblood:#8e2f2a;    /* headband red */
@@ -32,44 +35,49 @@ h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
 /* headband: the little striped cord at the top of a bound spine */
 .headband{height:8px;background:repeating-linear-gradient(90deg,var(--oxblood) 0 6px,var(--gilt) 6px 9px)}
 
-header.top{padding-block:20px}
-header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-.mark{font-family:var(--display);font-size:1.25rem;letter-spacing:.04em;color:var(--paper);text-decoration:none}
+header.top{position:absolute;left:0;right:0;z-index:2;padding-block:20px}
+header.top .wrap{display:flex;justify-content:flex-end;align-items:center;gap:16px;flex-wrap:wrap}
 nav{display:flex;gap:20px;font-size:.95rem}
-nav a{color:var(--dim);text-decoration:none}
-nav a:hover{color:var(--gilt)}
+nav a{color:var(--ink);text-decoration:none;opacity:.8;text-shadow:0 1px 6px #000}
+nav a:hover{opacity:1;color:var(--gilt)}
 
-.title{padding-block:64px 80px;text-align:center}
-.title .frame{border:1px solid var(--gilt);outline:1px solid var(--gilt);outline-offset:6px;padding:56px 24px;max-width:760px;margin:0 auto}
-.title h1{font-size:clamp(2.6rem,8vw,5.2rem);line-height:1;letter-spacing:.02em}
-.title .fleuron{color:var(--gilt);font-size:1.4rem;margin:18px 0}
-.title p{font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,2.6vw,1.45rem);color:var(--dim);max-width:34ch;margin:0 auto}
+/* the studio card: the painted vista, the gate mark, LOREBOUND set wide and GAMES small under it, as the games open */
+.card{position:relative;background:var(--night) url(img/studio-vista.jpg) center/cover no-repeat;min-height:min(56.25vw,720px);display:grid;align-items:center}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,color-mix(in srgb,var(--night) 55%,transparent) 70%),linear-gradient(0deg,var(--cloth),transparent 22%)}
+.card .wrap{position:relative;z-index:1;width:100%;box-sizing:border-box;display:flex;justify-content:flex-end;padding-block:88px 64px}
+.brand{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--ink);text-align:center;margin-right:clamp(0px,6vw,96px)}
+.brand img{width:clamp(56px,7vw,92px);height:auto}
+.brand h1{font:500 clamp(2.2rem,6.4vw,4.6rem)/1 var(--body);letter-spacing:.32em;margin-right:-.32em;text-transform:uppercase}
+.brand .sub{font:500 clamp(.9rem,1.7vw,1.2rem)/1 var(--body);letter-spacing:.6em;margin-right:-.6em;text-transform:uppercase}
+.brand p{font-family:var(--serif);font-style:italic;font-size:clamp(1.05rem,2vw,1.3rem);color:var(--ink);opacity:.85;max-width:30ch;margin:14px 0 0;text-shadow:0 1px 8px #000}
 
-section.vol{padding-block:72px;border-top:1px solid var(--rule)}
-.vol .wrap{display:flex;flex-direction:column;gap:40px}
-.vol .lead{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center}
-.vol .lead>*{min-width:0}
-.vol .text{display:flex;flex-direction:column;gap:14px}
-.vol h2{font-size:clamp(2.2rem,5vw,3.2rem);line-height:1.05}
+section.vol{padding-block:80px;border-top:1px solid var(--rule)}
+.vol .wrap{display:flex;flex-direction:column;gap:56px}
+.vol .lead{display:flex;flex-direction:column;gap:22px}
+.vol .head{display:flex;justify-content:space-between;align-items:end;gap:16px 40px;flex-wrap:wrap}
+.vol .head>div{display:flex;flex-direction:column;gap:10px;min-width:0}
+.vol h2{font-size:clamp(2.4rem,5.5vw,3.6rem);line-height:1}
 .vol .genre{font-family:var(--serif);font-style:italic;color:var(--dim);font-size:1.2rem}
-.vol p{margin:0;max-width:62ch}
-.status{display:inline-block;align-self:flex-start;border:1px solid var(--oxblood);color:var(--paper);background:color-mix(in srgb,var(--oxblood) 30%,transparent);padding:3px 10px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+.vol .pitch{margin:0;max-width:62ch}
+.status{display:inline-block;border:1px solid var(--oxblood);color:var(--paper);background:color-mix(in srgb,var(--oxblood) 30%,transparent);padding:3px 10px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
 
-figure{margin:0}
+figure{margin:0;min-width:0}
 figure a{display:block}
 figure img{display:block;width:100%;height:auto;border:1px solid var(--rule);box-shadow:0 18px 40px -18px #000;transition:border-color .2s}
 figure a:hover img{border-color:var(--gilt)}
 figcaption{font-size:.88rem;color:var(--dim);margin-top:8px}
 
-/* what sets it apart: a two-column list, each entry a short claim and the plain comparison */
-.apart h3{font-size:1.6rem;margin-bottom:18px}
-.apart ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 40px}
-.apart li{border-top:1px solid var(--rule);padding-top:14px}
-.apart strong{display:block;font-family:var(--serif);font-weight:400;font-size:1.22rem;color:var(--paper);margin-bottom:4px}
-.apart span{color:var(--dim);font-size:.98rem}
+/* what sets it apart: one row per point, the shot that shows it beside the words, sides alternating */
+.apart h3{font-size:1.7rem;margin-bottom:8px}
+.apart ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.feat{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:32px;border-top:1px solid var(--rule)}
+.feat:nth-child(even) figure{order:2}
+.feat strong{display:block;font-family:var(--serif);font-weight:400;font-size:1.55rem;line-height:1.2;color:var(--paper);margin-bottom:10px}
+.feat p{margin:0;color:var(--dim);max-width:46ch}
 
-.plates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 24px}
-.plates .hint{grid-column:1/-1;color:var(--dim);font-size:.85rem;margin:-12px 0 0}
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.more h3{grid-column:1/-1;font-size:1.3rem}
+.hint{color:var(--dim);font-size:.85rem;margin:0}
 
 section.about{padding-block:64px;border-top:1px solid var(--rule)}
 .about .cols{display:grid;grid-template-columns:1fr 2fr;gap:48px}
@@ -79,14 +87,17 @@ section.about{padding-block:64px;border-top:1px solid var(--rule)}
 footer{border-top:1px solid var(--rule);padding-block:28px;color:var(--dim);font-size:.88rem}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
-@media (max-width:900px){
-  .plates{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .vol .lead{grid-template-columns:1fr;gap:24px}
+@media (max-width:820px){
+  .feat{grid-template-columns:1fr;gap:18px}
+  .feat:nth-child(even) figure{order:0}
+  .more{grid-template-columns:1fr 1fr}
+  .card .wrap{justify-content:center}
+  .brand{margin-right:0}
+  .card::after{background:color-mix(in srgb,var(--night) 50%,transparent)}
 }
-@media (max-width:640px){
-  .plates,.apart ul,.about .cols{grid-template-columns:1fr}
-  .title{padding-block:40px 56px}
-  .title .frame{padding:36px 16px}
+@media (max-width:560px){
+  .more,.about .cols{grid-template-columns:1fr}
+  header.top .wrap{justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){figure img{transition:none}}
 </style>
@@ -94,85 +105,121 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 <body>
 <div class="headband" aria-hidden="true"></div>
 <header class="top"><div class="wrap">
-  <a class="mark" href="#top" id="top">Lorebound Games</a>
   <nav aria-label="Sections"><a href="#sorcmerc">SorcMerc</a><a href="#horde">Horde</a><a href="#studio">Studio</a></nav>
 </div></header>
 
 <main>
-<div class="wrap title"><div class="frame">
-  <div class="eyebrow">An independent games studio</div>
-  <div class="fleuron" aria-hidden="true">❦</div>
-  <h1>Lorebound Games</h1>
-  <div class="fleuron" aria-hidden="true">❦</div>
-  <p>Fantasy games about hired swords, borrowed magic, and the bill that comes due.</p>
-</div></div>
+<div class="card" role="img" aria-label="A cloaked wanderer on a cliff looks across misty mountains to a ruined tower and an arched bridge under the moon.">
+  <div class="wrap"><div class="brand">
+    <img src="img/lorebound-mark.svg" alt="" width="128" height="160">
+    <h1>Lorebound</h1>
+    <div class="sub">Games</div>
+    <p>Fantasy games about hired swords, borrowed magic, and the bill that comes due.</p>
+  </div></div>
+</div>
 
 <section class="vol" id="sorcmerc"><div class="wrap">
   <div class="lead">
-    <figure><a href="img/sorcmerc-combat-full.jpg"><img src="img/sorcmerc-combat.jpg" alt="SorcMerc combat: four mercenaries on a hex board inside a flooded shrine, facing hobgoblins, with the action log on the left and the spell bar below." width="1600" height="900"></a><figcaption>The Sunken Shrine, round 1.</figcaption></figure>
-    <div class="text">
-      <div class="eyebrow">Volume I</div>
-      <h2>SorcMerc</h2>
-      <div class="genre">A tactical fantasy RPG on the 2024 fifth-edition rules</div>
-      <p>Found a mercenary company, hire its blades at roadside inns, and take work from town notice boards. Every fight is turn by turn on a hex board, and every spell you cast stays spent until you can afford a proper night's rest.</p>
+    <figure><a href="img/sorcmerc-title-full.jpg"><img src="img/sorcmerc-title.jpg" alt="The SorcMerc title screen: the SORCMERC wordmark and menu beside a painting of four adventurers at a campfire at night." width="1600" height="900"></a></figure>
+    <div class="head">
+      <div>
+        <div class="eyebrow">Volume I</div>
+        <h2>SorcMerc</h2>
+        <div class="genre">A tactical fantasy RPG on the 2024 fifth-edition rules</div>
+      </div>
       <span class="status">In development</span>
     </div>
+    <p class="pitch">Found a mercenary company, hire its blades at roadside inns, and take work from town notice boards. Every fight is turn by turn on a hex board, and every spell you cast stays spent until you can afford a proper night's rest.</p>
   </div>
 
   <div class="apart">
     <h3>What sets it apart</h3>
-    <ul>
-      <li><strong>Magic you have to ration</strong><span>Spell slots come back only on a long rest, and a long rest costs eight hours of world time, an inn fee or a camp with a chance of ambush. Most 5e games hand slots back after every fight.</span></li>
-      <li><strong>Mercs who remember</strong><span>Your company earns scars, banes and veteran traits. They form opinions of each other: friends cover each other in a fight, rivals get in the way.</span></li>
-      <li><strong>An open world of roads</strong><span>March between towns on a living clock. Four countries get harder the farther you go from home, factions go to war, and towns remember how you treated them.</span></li>
-      <li><strong>Full 5e rules on hexes</strong><span>2024 character creation and the real action economy, played on a hex grid. Surprise, cover and the ground you stand on all count.</span></li>
-      <li><strong>Online co-op for up to four</strong><span>Share a room code and run one company together. The host leads the march, and everyone fights.</span></li>
-      <li><strong>Built to be modded</strong><span>Campaigns, monsters and items are plain data packs. The bundled content uses the same tools players get.</span></li>
-    </ul>
+    <ol>
+      <li class="feat">
+        <figure><a href="img/sorcmerc-combat-full.jpg"><img src="img/sorcmerc-combat.jpg" alt="Combat in the Sunken Shrine: the cleric's portrait counts her remaining spell slots, and the spell bar runs along the bottom." width="1600" height="900" loading="lazy"></a><figcaption>The Sunken Shrine. The cleric's card counts the slots she has left.</figcaption></figure>
+        <div><strong>Magic you have to ration</strong><p>Spell slots come back only on a long rest, and a long rest costs eight hours of world time, an inn fee or a camp with a chance of ambush. Most 5e games hand slots back after every fight.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/sorcmerc-company-full.jpg"><img src="img/sorcmerc-company.jpg" alt="The muster roll: five mercenaries with their gear and health, and Vera Kord's character sheet with her traits and relations." width="1600" height="900" loading="lazy"></a><figcaption>The muster roll. Each sheet tracks traits, relations and a fight record.</figcaption></figure>
+        <div><strong>Mercs who remember</strong><p>Your company earns scars, banes and veteran traits. They form opinions of each other: friends cover each other in a fight, rivals get in the way.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/sorcmerc-world-full.jpg"><img src="img/sorcmerc-world.jpg" alt="The 3D overworld turned to a new angle: a walled town at a crossroads, grassland, and roads to Ashfell, Oakford and Dun Arrow." width="1600" height="900" loading="lazy"></a><figcaption>Riverhold at the crossroads. The map turns and tilts.</figcaption></figure>
+        <div><strong>An open world of roads</strong><p>March between towns on a living clock. Four countries get harder the farther you go from home, factions go to war, and towns remember how you treated them.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/sorcmerc-ambush-full.jpg"><img src="img/sorcmerc-ambush.jpg" alt="A road fight on the Open Downs: the company faces assassins and bandits on a hex board, with an assassin's stat block open." width="1600" height="900" loading="lazy"></a><figcaption>The Open Downs: assassins and bandits on the road.</figcaption></figure>
+        <div><strong>Full 5e rules on hexes</strong><p>2024 character creation and the real action economy, played on a hex grid. Surprise, cover and the ground you stand on all count.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/sorcmerc-coop-full.jpg"><img src="img/sorcmerc-coop.jpg" alt="The Play together screen: a six-letter room code and a choice of company, in front of a campfire painting." width="1600" height="900" loading="lazy"></a><figcaption>Play together: one room code, one company.</figcaption></figure>
+        <div><strong>Online co-op for up to four</strong><p>Share a room code and run one company together. The host leads the march, and everyone fights.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/sorcmerc-mods-full.jpg"><img src="img/sorcmerc-mods.jpg" alt="The Campaigns and mods screen listing bundled campaigns, with a button to open the mods folder." width="1600" height="900" loading="lazy"></a><figcaption>Campaigns and mods, side by side.</figcaption></figure>
+        <div><strong>Built to be modded</strong><p>Campaigns, monsters and items are plain data packs. The bundled content uses the same tools players get.</p></div>
+      </li>
+    </ol>
   </div>
 
-  <div class="plates">
-    <figure><a href="img/sorcmerc-world-full.jpg"><img src="img/sorcmerc-world.jpg" alt="The 3D overworld seen from above: a walled town at a crossroads, grassland, and roads leading to other towns, with a compass minimap." width="1600" height="900" loading="lazy"></a><figcaption>Riverhold at the crossroads. The world map turns and tilts.</figcaption></figure>
-    <figure><a href="img/sorcmerc-ambush-full.jpg"><img src="img/sorcmerc-ambush.jpg" alt="A road fight on open downs: the company faces assassins and bandits on a hex board, with a foe's stat card open on the left." width="1600" height="900" loading="lazy"></a><figcaption>The Open Downs: assassins and bandits on the road.</figcaption></figure>
-    <figure><a href="img/sorcmerc-company-full.jpg"><img src="img/sorcmerc-company.jpg" alt="The muster roll: five mercenaries listed with their gear and health, and Vera Kord's full character sheet beside them." width="1600" height="900" loading="lazy"></a><figcaption>The muster roll and a full character sheet.</figcaption></figure>
-    <figure><a href="img/sorcmerc-inn-full.jpg"><img src="img/sorcmerc-inn.jpg" alt="An inn in Riverhold: the innkeeper talks, rumours from the common room, downtime options, and three mercenaries looking for work." width="1600" height="900" loading="lazy"></a><figcaption>The inn: rumours, downtime, and swords for hire.</figcaption></figure>
+  <div class="more">
+    <h3>More from the road</h3>
+    <figure><a href="img/sorcmerc-roads-full.jpg"><img src="img/sorcmerc-roads.jpg" alt="The company's marker on the road between Ashfell and Riverhold, five minutes' march from town." width="1600" height="900" loading="lazy"></a><figcaption>Between Ashfell and Riverhold.</figcaption></figure>
+    <figure><a href="img/sorcmerc-inn-full.jpg"><img src="img/sorcmerc-inn.jpg" alt="An inn in Riverhold: the innkeeper talks, rumours from the common room, downtime options, and mercenaries looking for work." width="1600" height="900" loading="lazy"></a><figcaption>The inn: rumours, downtime, and swords for hire.</figcaption></figure>
     <figure><a href="img/sorcmerc-jobs-full.jpg"><img src="img/sorcmerc-jobs.jpg" alt="Marlow's notice board: a finished job paid out, and three new jobs with their pay in coin and experience." width="1600" height="900" loading="lazy"></a><figcaption>The notice board: jobs pay coin, experience and standing.</figcaption></figure>
-    <figure><a href="img/sorcmerc-title-full.jpg"><img src="img/sorcmerc-title.jpg" alt="The SorcMerc title screen: three mercenaries resting by a campfire at night beside their tents." width="1600" height="900" loading="lazy"></a><figcaption>A company for hire, a long road, and whoever comes home from it.</figcaption></figure>
     <p class="hint">Every screenshot opens at full 3840 × 2160.</p>
   </div>
 </div></section>
 
 <section class="vol" id="horde"><div class="wrap">
   <div class="lead">
-    <figure><a href="img/horde-swarm-full.jpg"><img src="img/horde-swarm.jpg" alt="Horde, wave 18: a small band of heroes in the middle of hundreds of goblins, skeletons and wolves, with a 166 kill combo." width="1600" height="900"></a><figcaption>Wave 18, an elite wave. Hundreds on screen.</figcaption></figure>
-    <div class="text">
-      <div class="eyebrow">Volume II</div>
-      <h2>Horde</h2>
-      <div class="genre">A bullet-hell roguelite, set beside SorcMerc's world</div>
-      <p>Twenty waves, mini-bosses at waves 7, 12 and 16, a boss at 20, and then a final swarm that never stops. You lead a small warband through it, hire and pay companions at camp between waves, and build a squad that can stand in a sea of up to fifteen hundred monsters.</p>
+    <figure><a href="img/horde-title-full.jpg"><img src="img/horde-title.jpg" alt="Horde key art: the HORDE title over a fire mage, a swordsman, a crossbow archer and a bard standing back to back in a sea of grinning goblins." width="1232" height="706"></a></figure>
+    <div class="head">
+      <div>
+        <div class="eyebrow">Volume II</div>
+        <h2>Horde</h2>
+        <div class="genre">A bullet-hell roguelite, set beside SorcMerc's world</div>
+      </div>
       <span class="status">In development</span>
     </div>
+    <p class="pitch">Twenty waves, mini-bosses at waves 7, 12 and 16, a boss at 20, and then a final swarm that never stops. You lead a small warband through it, hire and pay companions at camp between waves, and build a squad that can stand in a sea of up to fifteen hundred monsters. Horde is a working title.</p>
   </div>
 
   <div class="apart">
     <h3>What sets it apart</h3>
-    <ul>
-      <li><strong>A warband, not a lone hero</strong><span>Most survivor-likes give you one character. Here you fight beside companions with their own auras and skills, and you can order them around mid-wave.</span></li>
-      <li><strong>Wages, deserters and rivals</strong><span>Companions expect pay at every camp. Skip it and they leave, then come back later as rival mercs you have to beat.</span></li>
-      <li><strong>Every relic has a catch</strong><span>Relics carry a boon and a curse together, and you carry only four. Swapping one out is a real decision.</span></li>
-      <li><strong>Couch co-op for up to four</strong><span>Two to four players on one screen, each playing a hero. Any empty seat is filled by an AI companion.</span></li>
-      <li><strong>Mercs who level up</strong><span>Train a class at camp and its basic attack evolves at level three. Named mercs earn quirks and scars, and the fallen go on a memorial.</span></li>
-      <li><strong>A weekly challenge</strong><span>Each week brings one fixed squad and set of rules for everyone, and any run can be shared by its seed.</span></li>
-    </ul>
+    <ol>
+      <li class="feat">
+        <figure><a href="img/horde-wave-full.jpg"><img src="img/horde-wave.jpg" alt="Wave 12: the hero and three companions fight together, with the Command All panel listing each companion's order key." width="1600" height="900" loading="lazy"></a><figcaption>Wave 12. The companions' panel sits bottom left, one key each.</figcaption></figure>
+        <div><strong>A warband, not a lone hero</strong><p>Most survivor-likes give you one character. Here you fight beside companions with their own auras and skills, and you can order them around mid-wave.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/horde-wages-full.jpg"><img src="img/horde-wages.jpg" alt="Camp after wave 3: the squad list marks one companion as unpaid, with a button to pay them." width="1600" height="900" loading="lazy"></a><figcaption>Camp: Isolde the Hedge Witch is unpaid.</figcaption></figure>
+        <div><strong>Wages, deserters and rivals</strong><p>Companions expect pay at every camp. Skip it and they leave, then come back later as rival mercs you have to beat.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/horde-camp-full.jpg"><img src="img/horde-camp.jpg" alt="Camp with three carried relics and a newly found relic, the Bloodied Chalice, showing its boon and its curse." width="1600" height="900" loading="lazy"></a><figcaption>The Bloodied Chalice: more crit, less health.</figcaption></figure>
+        <div><strong>Every relic has a catch</strong><p>Relics carry a boon and a curse together, and you carry only four. Swapping one out is a real decision.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/horde-coop-full.jpg"><img src="img/horde-coop.jpg" alt="Four-player couch co-op: four hero panels along the bottom, each with its own controller label." width="1600" height="900" loading="lazy"></a><figcaption>Four players, keyboards and gamepads mixed.</figcaption></figure>
+        <div><strong>Couch co-op for up to four</strong><p>Two to four players on one screen, each playing a hero. Any empty seat is filled by an AI companion.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/horde-memorial-full.jpg"><img src="img/horde-memorial.jpg" alt="The memorial: named mercs who fell, each with their quirk, where they were lost and a line about them." width="1600" height="900" loading="lazy"></a><figcaption>The memorial keeps every named merc you lost.</figcaption></figure>
+        <div><strong>Mercs who level up</strong><p>Train a class at camp and its basic attack evolves at level three. Named mercs earn quirks and scars, and the fallen go on a memorial.</p></div>
+      </li>
+      <li class="feat">
+        <figure><a href="img/horde-weekly-full.jpg"><img src="img/horde-weekly.jpg" alt="The Horde title screen with Play, Daily and Weekly buttons and today's daily rules in a panel." width="1600" height="900" loading="lazy"></a><figcaption>The title screen, with the daily and weekly runs.</figcaption></figure>
+        <div><strong>A weekly challenge</strong><p>Each week brings one fixed squad and set of rules for everyone, and any run can be shared by its seed.</p></div>
+      </li>
+    </ol>
   </div>
 
-  <div class="plates">
-    <figure><a href="img/horde-boss-full.jpg"><img src="img/horde-boss.jpg" alt="The Wyrm, a coiled green serpent boss, fights the warband on wave 20 with its health bar across the top." width="1600" height="900" loading="lazy"></a><figcaption>Wave 20: the Wyrm.</figcaption></figure>
-    <figure><a href="img/horde-levelup-full.jpg"><img src="img/horde-levelup.jpg" alt="A level-up banner over a crowded field, with a 601 kill combo and a fountain on the map." width="1600" height="900" loading="lazy"></a><figcaption>A 601-kill combo, and a level up.</figcaption></figure>
-    <figure><a href="img/horde-wave-full.jpg"><img src="img/horde-wave.jpg" alt="Wave 12, a mini-boss wave: the Brass Colossus health bar at the top and a risk shrine offering more health for faster foes." width="1600" height="900" loading="lazy"></a><figcaption>Wave 12: the Brass Colossus and a risk shrine.</figcaption></figure>
-    <figure><a href="img/horde-camp-full.jpg"><img src="img/horde-camp.jpg" alt="Camp between waves: the squad and their wages, a shop of upgrades, three carried relics and a newly found relic with its boon and curse." width="1600" height="900" loading="lazy"></a><figcaption>Camp: pay the squad, shop, and weigh a cursed relic.</figcaption></figure>
-    <figure><a href="img/horde-picks-full.jpg"><img src="img/horde-picks.jpg" alt="The first pick at camp: three upgrade cards, a reroll button, and the squad's synergies listed on the left." width="1600" height="900" loading="lazy"></a><figcaption>Upgrade picks, with reroll and banish.</figcaption></figure>
-    <figure><a href="img/horde-keyart-full.jpg"><img src="img/horde-keyart.jpg" alt="Horde key art: a fire mage, a swordsman, a crossbow archer and a bard stand back to back in a sea of grinning goblins and skeletons." width="1600" height="517" loading="lazy"></a><figcaption>Key art. Horde is a working title.</figcaption></figure>
+  <div class="more">
+    <h3>More from the field</h3>
+    <figure><a href="img/horde-swarm-full.jpg"><img src="img/horde-swarm.jpg" alt="Wave 18: a small band of heroes in the middle of hundreds of goblins, skeletons and wolves, with a 166 kill combo." width="1600" height="900" loading="lazy"></a><figcaption>Wave 18, an elite wave.</figcaption></figure>
+    <figure><a href="img/horde-boss-full.jpg"><img src="img/horde-boss.jpg" alt="The Wyrm, a coiled green serpent boss, fights the warband on wave 20." width="1600" height="900" loading="lazy"></a><figcaption>Wave 20: the Wyrm.</figcaption></figure>
+    <figure><a href="img/horde-levelup-full.jpg"><img src="img/horde-levelup.jpg" alt="A level-up banner over a crowded field, with a 601 kill combo." width="1600" height="900" loading="lazy"></a><figcaption>A 601-kill combo, and a level up.</figcaption></figure>
     <p class="hint">Every screenshot opens at full 3840 × 2160.</p>
   </div>
 </div></section>
