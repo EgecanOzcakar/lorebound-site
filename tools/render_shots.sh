@@ -26,9 +26,11 @@ mv "$SORC/combat_screen.png" "$OUT/sorcmerc-ambush.png"
 ARGS=(-s tests/shot_world.gd); X "$SORC" "$G" --path .
 mv "$SORC/world_screen.png" "$OUT/sorcmerc-roads.png"; mv "$SORC/world_turned.png" "$OUT/sorcmerc-world.png"
 ARGS=(-s tests/shot_screens.gd)
-for s in party:company town-inn:inn first-job:jobs coop-room:coop mods:mods; do
-  SHOT_ONLY=${s%%:*} X "$SORC" "$G" --path .
-  mv "$SORC/shots_tmp/${s%%:*}.png" "$OUT/sorcmerc-${s##*:}.png"
+# group/frame/site name: SHOT_ONLY picks a group, and some groups save several frames (town saves town-inn, coop saves coop-room)
+for s in party/party/company town/town-inn/inn first-job/first-job/jobs coop/coop-room/coop mods/mods/mods; do
+  IFS=/ read -r group frame name <<< "$s"
+  SHOT_ONLY=$group X "$SORC" "$G" --path .
+  mv "$SORC/shots_tmp/$frame.png" "$OUT/sorcmerc-$name.png"
 done
 unset SORCMERC_FAST
 
