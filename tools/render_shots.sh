@@ -19,7 +19,7 @@ X() {   # one 4K run under a virtual display; the game's own exit code decides
 G=$GODOT_SORCMERC
 (cd "$SORC" && timeout 1500 "$G" --headless --path . --import >/dev/null 2>&1) || true   # import exits non-zero on warnings
 export SORCMERC_FAST=1
-ARGS=(-s tests/shot.gd); X "$SORC" "$G" --path .
+ARGS=(-s tests/shot.gd); SORCMERC_SEED=1 X "$SORC" "$G" --path .   # seeded, so an unchanged game renders the same frame
 mv "$SORC/combat_screen.png" "$OUT/sorcmerc-combat.png"
 SHOT_THEME=downs SHOT_SITE=road SHOT_BIOME=downs SHOT_FOES=assassin:2,bandit:2 SHOT_HOVER=foe SORCMERC_SEED=3 X "$SORC" "$G" --path .
 mv "$SORC/combat_screen.png" "$OUT/sorcmerc-ambush.png"
