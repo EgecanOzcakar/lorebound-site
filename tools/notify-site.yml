@@ -1,0 +1,30 @@
+# Copy this file to .github/workflows/notify-site.yml in each game repo (sorcmerc, trailpartyops).
+# When a push to the game's default branch touches a file the studio site shows, it tells lorebound-site to sync
+# (lorebound-site/.github/workflows/sync-art.yml). A change under store/ also re-renders the site's screenshots,
+# so refreshing the store art refreshes the whole site; a change to the splash or mark only copies them.
+# Needs one secret in the game repo, SITE_DISPATCH_TOKEN: a fine-grained token on lorebound-site with Contents: read and write
+# (what GitHub asks of a repository_dispatch).
+name: Notify the studio site
+
+on:
+  push:
+    paths:
+      - "store/**"
+      - "assets/generated/studio-vista.png"   # SorcMerc only; a path the repo doesn't have never matches
+      - "assets/icons/brand/lorebound.svg"
+
+jobs:
+  notify:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send the game-art event
+        env:
+          TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          # store/ touched by any commit in the push -> re-render screenshots too
+          shots=$(jq '[.commits[] | (.added + .modified + .removed)[] | startswith("store/")] | any' "$GITHUB_EVENT_PATH")
+          curl -fsS -X POST https://api.github.com/repos/EgecanOzcakar/lorebound-site/dispatches \
+            -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            -d "{\"event_type\":\"game-art\",\"client_payload\":{\"shots\":$shots,\"from\":\"${{ github.repository }}@${{ github.sha }}\"}}"
+          echo "Sent game-art (shots: $shots)"
