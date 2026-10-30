@@ -1,0 +1,113 @@
+# Keeps img/ in step with the games, so nobody tracks art by hand.
+#   Every day: the store art (both main capsules) and the studio splash, copied from each game repo's default branch.
+#   Every Monday, or by hand with "render screenshots" ticked: the 4K screenshots too, rendered from current builds
+#   (tools/render_shots.sh, about half an hour).
+# A changed image is committed to main, and Pages redeploys. A render that looks the same as the one already here is
+# not committed (tools/sync_art.py), so the repo only grows when the games really changed.
+# Needs one secret, GAME_REPOS_TOKEN: a fine-grained token with read-only Contents on sorcmerc and trailpartyops.
+name: Sync game art
+
+on:
+  schedule:
+    - cron: "17 4 * * *"   # store art, daily
+    - cron: "41 5 * * 1"   # store art and screenshots, Mondays
+  workflow_dispatch:
+    inputs:
+      shots:
+        description: Render screenshots too (about 30 minutes)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency: sync-art
+
+env:
+  SHOTS: ${{ inputs.shots || github.event.schedule == '41 5 * * 1' }}
+  GODOT_SORCMERC_VERSION: 4.7.1   # sorcmerc/project.godot config/features
+  GODOT_HORDE_VERSION: 4.4.1      # trailpartyops/project.godot config/features
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out SorcMerc (store art only)
+        if: env.SHOTS != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: EgecanOzcakar/sorcmerc
+          token: ${{ secrets.GAME_REPOS_TOKEN }}
+          path: src/sorcmerc
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            store
+            assets/generated/studio-vista.png
+            assets/icons/brand/lorebound.svg
+
+      - name: Check out SorcMerc (whole game, to render it)
+        if: env.SHOTS == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: EgecanOzcakar/sorcmerc
+          token: ${{ secrets.GAME_REPOS_TOKEN }}
+          path: src/sorcmerc
+
+      - name: Check out Horde (store art only)
+        if: env.SHOTS != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: EgecanOzcakar/trailpartyops
+          token: ${{ secrets.GAME_REPOS_TOKEN }}
+          path: src/trailpartyops
+          sparse-checkout: store
+
+      - name: Check out Horde (whole game, to render it)
+        if: env.SHOTS == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: EgecanOzcakar/trailpartyops
+          token: ${{ secrets.GAME_REPOS_TOKEN }}
+          path: src/trailpartyops
+
+      - run: pip install pillow
+
+      - name: Get Godot
+        if: env.SHOTS == 'true'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri >/dev/null
+          mkdir -p ~/godot && cd ~/godot
+          for v in $GODOT_SORCMERC_VERSION $GODOT_HORDE_VERSION; do
+            curl -sSL -o g.zip "https://github.com/godotengine/godot/releases/download/$v-stable/Godot_v$v-stable_linux.x86_64.zip"
+            unzip -oq g.zip && rm g.zip
+          done
+          echo "GODOT_SORCMERC=$HOME/godot/Godot_v$GODOT_SORCMERC_VERSION-stable_linux.x86_64" >> "$GITHUB_ENV"
+          echo "GODOT_HORDE=$HOME/godot/Godot_v$GODOT_HORDE_VERSION-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Render screenshots
+        if: env.SHOTS == 'true'
+        run: tools/render_shots.sh src/sorcmerc src/trailpartyops "$RUNNER_TEMP/shots"
+
+      - name: Sync into img/
+        run: |
+          if [ "$SHOTS" = true ]; then shots="$RUNNER_TEMP/shots"; else shots=""; fi
+          python3 tools/sync_art.py src/sorcmerc src/trailpartyops $shots | tee "$RUNNER_TEMP/changed.txt"
+
+      - name: Commit
+        run: |
+          [ -s "$RUNNER_TEMP/changed.txt" ] || { echo "Everything is current."; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img
+          {
+            echo "Sync game art"
+            echo
+            cat "$RUNNER_TEMP/changed.txt"
+            echo
+            echo "sorcmerc@$(git -C src/sorcmerc rev-parse --short HEAD), trailpartyops@$(git -C src/trailpartyops rev-parse --short HEAD)"
+          } > "$RUNNER_TEMP/msg.txt"
+          git commit -q -F "$RUNNER_TEMP/msg.txt"
+          git push
