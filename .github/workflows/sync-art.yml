@@ -1,7 +1,8 @@
 # Keeps img/ in step with the games, so nobody tracks art by hand.
 #   Every day: the store art (both main capsules) and the studio splash, copied from each game repo's default branch.
 #   Every Monday, or by hand with "render screenshots" ticked: the 4K screenshots too, rendered from current builds
-#   (tools/render_shots.sh, about half an hour).
+#   (tools/render_shots.sh, about half an hour). The Monday render is skipped while neither game has a new commit since
+#   the last one (img/SOURCES), because a render is never pixel-identical and would otherwise re-commit Horde's crowd shots.
 # A changed image is committed to main, and Pages redeploys. A render that looks the same as the one already here is
 # not committed (tools/sync_art.py), so the repo only grows when the games really changed.
 # Needs one secret, GAME_REPOS_TOKEN: a fine-grained token with read-only Contents on sorcmerc and trailpartyops.
@@ -75,8 +76,19 @@ jobs:
 
       - run: pip install pillow
 
+      # A render is never pixel-identical (Horde's crowd moves differently each run), so the Monday render is skipped while
+      # neither game has a new commit since the shots in img/SOURCES were taken. A render asked for by hand always runs.
+      - name: Decide whether to render
+        run: |
+          now="sorcmerc $(git -C src/sorcmerc rev-parse HEAD)
+          trailpartyops $(git -C src/trailpartyops rev-parse HEAD)"
+          if [ "$SHOTS" != true ]; then render=false
+          elif [ "${{ github.event_name }}" = schedule ] && [ "$now" = "$(cat img/SOURCES 2>/dev/null)" ]; then render=false; echo "Neither game changed since the last render."
+          else render=true; fi
+          echo "RENDER=$render" >> "$GITHUB_ENV"
+
       - name: Get Godot
-        if: env.SHOTS == 'true'
+        if: env.RENDER == 'true'
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri >/dev/null
           mkdir -p ~/godot && cd ~/godot
@@ -88,20 +100,23 @@ jobs:
           echo "GODOT_HORDE=$HOME/godot/Godot_v$GODOT_HORDE_VERSION-stable_linux.x86_64" >> "$GITHUB_ENV"
 
       - name: Render screenshots
-        if: env.SHOTS == 'true'
+        if: env.RENDER == 'true'
         run: tools/render_shots.sh src/sorcmerc src/trailpartyops "$RUNNER_TEMP/shots"
 
       - name: Sync into img/
         run: |
-          if [ "$SHOTS" = true ]; then shots="$RUNNER_TEMP/shots"; else shots=""; fi
+          if [ "$RENDER" = true ]; then shots="$RUNNER_TEMP/shots"; else shots=""; fi
           python3 tools/sync_art.py src/sorcmerc src/trailpartyops $shots | tee "$RUNNER_TEMP/changed.txt"
+          if [ "$RENDER" = true ]; then
+            printf 'sorcmerc %s\ntrailpartyops %s\n' "$(git -C src/sorcmerc rev-parse HEAD)" "$(git -C src/trailpartyops rev-parse HEAD)" > img/SOURCES
+          fi
 
       - name: Commit
         run: |
-          [ -s "$RUNNER_TEMP/changed.txt" ] || { echo "Everything is current."; exit 0; }
+          git add img
+          git diff --cached --quiet && { echo "Everything is current."; exit 0; }
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add img
           {
             echo "Sync game art"
             echo
