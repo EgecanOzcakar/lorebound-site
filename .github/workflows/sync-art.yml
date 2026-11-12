@@ -7,6 +7,7 @@
 # A changed image is committed to main, and Pages redeploys. A render that looks the same as the one already here is
 # not committed (tools/sync_art.py), so the repo only grows when the games really changed.
 #   yetanother4x's images are its own press stills and key art (store/), copied on every sync; nothing renders them here.
+#   Its trailer comes from its `trailer` release (see the trailer step), with the same token.
 # Needs one secret, GAME_REPOS_TOKEN: a fine-grained token with read-only Contents on sorcmerc, trailpartyops and yetanother4x.
 name: Sync game art
 
@@ -105,6 +106,22 @@ jobs:
         run: |
           if [ "$SHOTS" = true ]; then shots="$RUNNER_TEMP/shots"; else shots=""; fi
           python3 tools/sync_art.py src/sorcmerc src/trailpartyops src/yetanother4x $shots | tee "$RUNNER_TEMP/changed.txt"
+
+      # yetanother4x's trailer is a release asset: its Trailer workflow publishes the rolling `trailer` prerelease (on main
+      # and by hand); until the first of those exists, the trailer PR's `trailer-preview` stands in. Copied only when changed.
+      - name: Sync the yetanother4x trailer
+        env:
+          GH_TOKEN: ${{ secrets.GAME_REPOS_TOKEN }}
+        run: |
+          d="$RUNNER_TEMP/trailer"; mkdir -p "$d"
+          for tag in trailer trailer-preview; do
+            gh release download "$tag" -R EgecanOzcakar/yetanother4x -p trailer-web.mp4 -p poster.jpg -D "$d" --clobber 2>/dev/null && break
+          done
+          [ -f "$d/trailer-web.mp4" ] || { echo "No trailer release yet."; exit 0; }
+          for pair in trailer-web.mp4:ya4x-trailer.mp4 poster.jpg:ya4x-trailer.jpg; do
+            src="$d/${pair%%:*}"; dst="img/${pair##*:}"
+            cmp -s "$src" "$dst" 2>/dev/null || { cp "$src" "$dst"; echo "trailer $dst <- yetanother4x release $tag" | tee -a "$RUNNER_TEMP/changed.txt"; }
+          done
 
       - name: Commit
         run: |
