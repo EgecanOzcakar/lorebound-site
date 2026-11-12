@@ -4,8 +4,8 @@
     python3 tools/sync_art.py SORCMERC_DIR TRAILPARTYOPS_DIR YETANOTHER4X_DIR [SHOTS_DIR]
 
 Store art and the studio splash come straight from the game repos (SorcMerc's store/ and
-assets/, Horde's store/). yetanother4x's images are its own CI screenshots (docs/screenshots/,
-retaken on every PR), copied as they are, so it needs no render here. Screenshots come from SHOTS_DIR, which tools/render_shots.sh fills
+assets/, Horde's store/, yetanother4x's store/ with its press stills in store/shots/). yetanother4x
+renders its own stills (tools/press.sh there), so it needs no render here. Screenshots come from SHOTS_DIR, which tools/render_shots.sh fills
 with one <name>.png per shot; without it the screenshots are left alone.
 
 A shot is written only if it differs visibly from the one already in img/: a fresh render is
@@ -25,17 +25,20 @@ STORE = {
     "sorcmerc-capsule": ("sorcmerc", "store/main_capsule.png", "single"),
     "horde-title": ("trailpartyops", "store/main_capsule.png", "pair"),
     "studio-vista": ("sorcmerc", "assets/generated/studio-vista.png", "single"),
-    # ponytail: yetanother4x's CI shots are 1280x900 UI proof; switch these to its store/shots/ 4K stills once they land.
-    "ya4x-title": ("yetanother4x", "docs/screenshots/start.png", "pair"),
-    "ya4x-beats": ("yetanother4x", "docs/screenshots/battle-beat.png", "pair"),
-    "ya4x-heroes": ("yetanother4x", "docs/screenshots/hero-traits.png", "pair"),
-    "ya4x-diplomacy": ("yetanother4x", "docs/screenshots/diplomacy.png", "pair"),
-    "ya4x-factions": ("yetanother4x", "docs/screenshots/start-hotseat.png", "pair"),
-    "ya4x-magic": ("yetanother4x", "docs/screenshots/spellbook-strategic.png", "pair"),
-    "ya4x-autopilot": ("yetanother4x", "docs/screenshots/overworld-late.png", "pair"),
-    "ya4x-siege": ("yetanother4x", "docs/screenshots/siege.png", "pair"),
-    "ya4x-spell": ("yetanother4x", "docs/screenshots/battle-spell.png", "pair"),
-    "ya4x-empire": ("yetanother4x", "docs/screenshots/empire-graphs.png", "pair"),
+    # yetanother4x's press stills (Game/Press.cs, 3840x2160) and key art; the names are its store/README.md table.
+    "ya4x-capsule": ("yetanother4x", "store/main_capsule.png", "single"),
+    "ya4x-beats": ("yetanother4x", "store/shots/battle-command.png", "pair"),
+    "ya4x-heroes": ("yetanother4x", "store/shots/hero.png", "pair"),
+    "ya4x-diplomacy": ("yetanother4x", "store/shots/diplomacy.png", "pair"),
+    "ya4x-factions": ("yetanother4x", "store/shots/faction-dreamweaver.png", "pair"),
+    "ya4x-magic": ("yetanother4x", "store/shots/spellbook.png", "pair"),
+    "ya4x-autopilot": ("yetanother4x", "store/shots/overworld-late.png", "pair"),
+    "ya4x-siege": ("yetanother4x", "store/shots/siege.png", "pair"),
+    "ya4x-spell": ("yetanother4x", "store/shots/battle-spell.png", "pair"),
+    "ya4x-clash": ("yetanother4x", "store/shots/battle-clash.png", "pair"),
+    "ya4x-winter": ("yetanother4x", "store/shots/overworld-winter.png", "pair"),
+    "ya4x-city": ("yetanother4x", "store/shots/city.png", "pair"),
+    "ya4x-ashen": ("yetanother4x", "store/shots/faction-ashen.png", "pair"),
 }
 COPY = {"lorebound-mark.svg": ("sorcmerc", "assets/icons/brand/lorebound.svg")}
 SHOTS = [

@@ -10,4 +10,4 @@
 - `sorcmerc-*.jpg`, `horde-*.jpg` (all others): in-game screenshots rendered at 3840x2160 on 2026-10-22 from the current builds
   (SorcMerc `tests/shot.gd`, `shot_world.gd`, `shot_screens.gd`; Horde `game.tscn --shot`, `tests/gl_shell.gd`).
   `*-full.jpg` is the 4K frame, the plain name a 1600 px copy.
-- `ya4x-*.jpg`: yetanother4x's own CI screenshots (`docs/screenshots/`, 1280x900, `Game/Shots.cs`), copied by `tools/sync_art.py`.
+- `ya4x-capsule.jpg`, `ya4x-*.jpg`: yetanother4x's key art and press stills (`store/main_capsule.png`, `store/shots/`, rendered in the game by `Game/Press.cs` at 3840x2160; see that repo's store/PROVENANCE.md), copied by `tools/sync_art.py`.
