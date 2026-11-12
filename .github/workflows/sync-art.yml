@@ -6,7 +6,7 @@
 #   from current builds (tools/render_shots.sh, about half an hour).
 # A changed image is committed to main, and Pages redeploys. A render that looks the same as the one already here is
 # not committed (tools/sync_art.py), so the repo only grows when the games really changed.
-#   yetanother4x's images are its own CI screenshots (docs/screenshots/), copied on every sync; nothing renders them here.
+#   yetanother4x's images are its own press stills and key art (store/), copied on every sync; nothing renders them here.
 # Needs one secret, GAME_REPOS_TOKEN: a fine-grained token with read-only Contents on sorcmerc, trailpartyops and yetanother4x.
 name: Sync game art
 
@@ -75,13 +75,13 @@ jobs:
           token: ${{ secrets.GAME_REPOS_TOKEN }}
           path: src/trailpartyops
 
-      - name: Check out yetanother4x (its CI screenshots)
+      - name: Check out yetanother4x (its store art and press stills)
         uses: actions/checkout@v4
         with:
           repository: EgecanOzcakar/yetanother4x
           token: ${{ secrets.GAME_REPOS_TOKEN }}
           path: src/yetanother4x
-          sparse-checkout: docs/screenshots
+          sparse-checkout: store
 
       - run: pip install pillow
 
