@@ -11,3 +11,4 @@
   (SorcMerc `tests/shot.gd`, `shot_world.gd`, `shot_screens.gd`; Horde `game.tscn --shot`, `tests/gl_shell.gd`).
   `*-full.jpg` is the 4K frame, the plain name a 1600 px copy.
 - `ya4x-capsule.jpg`, `ya4x-*.jpg`: yetanother4x's key art and press stills (`store/main_capsule.png`, `store/shots/`, rendered in the game by `Game/Press.cs` at 3840x2160; see that repo's store/PROVENANCE.md), copied by `tools/sync_art.py`.
+- `ya4x-trailer.mp4`, `ya4x-trailer.jpg`: yetanother4x's trailer (1080p H.264 web encode, about 14 MB) and its poster frame, made by that repo's `tools/trailer.sh` (`Game/Trailer.cs`, recorded in the game with Godot's Movie Maker) from yetanother4x commit 895f5de.
